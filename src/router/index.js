@@ -1,25 +1,82 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from "vue-router"
+
+import {
+  NotFoundView,
+  NetworkErrorView,
+  ServerErrorView,
+} from "@/components/errors"
+import { ClientMainView, NewOutgoView } from "@/components/client"
+import { AdminMainView } from "@/components/admin"
+import { LoginView } from "@/components/auth"
+import store from "@/store"
 
 const routes = [
+  { path: "/:pathMatch(.*)*", name: "NotFound", component: NotFoundView },
+  { path: "", name: "root", redirect: "/client" },
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: "/login",
+    name: "login",
+    component: LoginView,
+    meta: { requiresAuth: false },
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    path: "/admin",
+    name: "admin-main",
+    component: AdminMainView,
+    meta: { requiresAuth: true, requiresStaff: true },
+  },
+  {
+    path: "/client",
+    name: "client-main",
+    component: ClientMainView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/client-add",
+    name: "client-add",
+    component: NewOutgoView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/network-error",
+    name: "network-error",
+    component: NetworkErrorView,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: "/server-error",
+    name: "server-error",
+    component: ServerErrorView,
+    meta: { requiresAuth: false },
+  },
 ]
 
 const router = createRouter({
+  routes,
   history: createWebHistory(process.env.BASE_URL),
-  routes
+})
+
+router.beforeEach(async (to, from) => {
+  await store.dispatch("auth/actionCheckLoggedIn")
+  const isLoggedIn = store.getters["auth/getIsLoggedIn"]
+
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    return {
+      path: "/login",
+      query: { redirect: to.fullPath },
+    }
+  }
+
+  const user = store.getters["auth/getUser"]
+  if (user) {
+    const isStaff = user.is_staff
+    if (to.meta.requiresStaff && !isStaff) {
+      return {
+        path: "/login",
+        query: { redirect: to.fullPath },
+      }
+    }
+  }
 })
 
 export default router
