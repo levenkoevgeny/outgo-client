@@ -20,4 +20,11 @@ export const outgoDataAPI = {
       authHeaders(token),
     )
   },
+  async addItemFull(token, itemData) {
+    return axios.post(
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/save_full_outgo/`,
+      itemData,
+      authHeaders(token),
+    )
+  },
 }
