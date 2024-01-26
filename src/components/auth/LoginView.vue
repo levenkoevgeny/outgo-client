@@ -3,7 +3,7 @@
     Ошибка авторизации!
   </div>
   <div
-    class="d-flex justify-content-center align-items-center container-fluid border"
+    class="d-flex justify-content-center align-items-center container-fluid"
     style="background-color: #f5f5f5; height: 100vh"
   >
     <main class="form-signin">
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters } from "vuex"
 export default {
   name: "LoginView",
   data() {
@@ -48,7 +48,7 @@ export default {
         username: "",
         password: "",
       },
-    };
+    }
   },
   computed: {
     ...mapGetters({
@@ -57,16 +57,16 @@ export default {
   },
   methods: {
     submitHandler(e) {
-      e.preventDefault();
-      e.stopPropagation();
+      e.preventDefault()
+      e.stopPropagation()
       this.$store
         .dispatch("auth/actionLogIn", { ...this.auth_data })
         .then(() => {
-          this.$router.replace(this.$route.query.redirect || "/");
-        });
+          this.$router.replace(this.$route.query.redirect || "/")
+        })
     },
   },
-};
+}
 </script>
 
 <style scoped>

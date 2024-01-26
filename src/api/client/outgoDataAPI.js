@@ -27,4 +27,18 @@ export const outgoDataAPI = {
       authHeaders(token),
     )
   },
+  async updateItemFull(token, itemData) {
+    return axios.put(
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/${itemData.id}/update_full_outgo/`,
+      itemData,
+      authHeaders(token),
+    )
+  },
+  async makeItemClone(token, itemId) {
+    return axios.put(
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/${itemId}/make_full_clone/`,
+      "",
+      authHeaders(token),
+    )
+  },
 }

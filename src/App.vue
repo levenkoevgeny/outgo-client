@@ -1,7 +1,13 @@
 <template>
-  <div class="container">
+  <Navbar />
+  <div>
     <router-view />
   </div>
 </template>
-
+<script>
+import { Navbar } from "@/components/common"
+export default {
+  components: { Navbar },
+}
+</script>
 <style></style>

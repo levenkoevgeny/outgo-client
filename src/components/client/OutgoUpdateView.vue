@@ -1,9 +1,13 @@
 <template>
   <div class="container">
-    <h3 class="my-4">Новый расход</h3>
-    {{ getFullOutgo }}
+    <h3 class="my-4">
+      Редактирование расхода личного состава на
+      <span class="text-decoration-underline">{{
+        updatedOutGo.outgo_date
+      }}</span>
+    </h3>
     <div>
-      <form @submit="submitForm" method="POST">
+      <form @submit="submitUpdateForm" method="POST">
         <div class="border border-2 mb-3 px-4 py-2">
           <div class="row">
             <div class="col-md-4">
@@ -13,7 +17,7 @@
                   class="form-select"
                   required
                   name="subdivision"
-                  v-model="newData.subdivision"
+                  v-model="updatedOutGo.subdivision"
                 >
                   <option value="">----</option>
                   <option
@@ -34,7 +38,7 @@
                   class="form-control"
                   name="outgo_date"
                   required
-                  v-model="newData.outgo_date"
+                  v-model="updatedOutGo.outgo_date"
                 />
               </div>
             </div>
@@ -45,7 +49,7 @@
                   class="form-select"
                   name="kind"
                   required
-                  v-model="newData.kind"
+                  v-model="updatedOutGo.kind"
                 >
                   <option value="">----</option>
                   <option
@@ -81,7 +85,7 @@
                       class="form-control"
                       min="0"
                       v-model="
-                        newData[
+                        updatedOutGo[
                           'item_' +
                             sheetItem.id +
                             '_kind_' +
@@ -89,7 +93,6 @@
                             '_count'
                         ]
                       "
-                      :required="sheetItem.is_required"
                     />
                   </div>
                   <div class="mb-3">
@@ -98,7 +101,7 @@
                       rows="2"
                       class="form-control"
                       v-model="
-                        newData[
+                        updatedOutGo[
                           'item_' +
                             sheetItem.id +
                             '_kind_' +
@@ -125,13 +128,11 @@ import { subdivisionAPI } from "@/api/client/subdivisionAPI"
 import { employeeKindAPI } from "@/api/client/employeeKindAPI"
 import { sheetItemsAPI } from "@/api/client/sheetItemsAPI"
 import { outgoKindAPI } from "@/api/client/outgoKindAPI"
-
-import Spinner from "@/components/common/Spinner"
 import { outgoDataAPI } from "@/api/client/outgoDataAPI"
+import { outgoAPI } from "@/api/client/outgoAPI"
 
 export default {
-  name: "NewOutgoView",
-  components: { Spinner },
+  name: "OutgoUpdateView",
   data() {
     return {
       subdivisionsList: { results: [] },
@@ -139,11 +140,7 @@ export default {
       sheetItemsList: { results: [] },
       outgoKindList: { results: [] },
       outgoList: { results: [] },
-      newData: {
-        kind: "",
-        subdivision: "",
-        outgo_date: "",
-      },
+      updatedOutGo: {},
       isLoading: true,
       isError: false,
       BACKEND_PROTOCOL: process.env.VUE_APP_BACKEND_PROTOCOL,
@@ -153,12 +150,42 @@ export default {
   },
   async created() {
     await this.loadData()
-    this.orderedSheetItems.map((shItem) => {
-      this.orderedEmployeeKinds.map((emplKind) => {
-        this.newData["item_" + shItem.id + "_kind_" + emplKind.id + "_count"] =
-          0
+    try {
+      const updatedOutgoDataResponse = await outgoDataAPI.getItemData(
+        this.userToken,
+        this.$route.params.id,
+      )
+      const updatedOutgoData = await updatedOutgoDataResponse.data
+      this.updatedOutGo["id"] = updatedOutgoData.id
+      this.updatedOutGo["kind"] = updatedOutgoData.kind
+      this.updatedOutGo["subdivision"] = updatedOutgoData.subdivision
+      this.updatedOutGo["outgo_date"] = updatedOutgoData.outgo_date
+      this.updatedOutGo["owner"] = updatedOutgoData.owner
+
+      const updatedOutgoResponse = await outgoAPI.getItemsList(this.userToken, {
+        outgo: this.$route.params.id,
       })
-    })
+      this.outgoList = await updatedOutgoResponse.data
+
+      this.orderedSheetItems.map((shItem) => {
+        this.orderedEmployeeKinds.map((emplKind) => {
+          let item = this.orderedOutgo.find(
+            (item) =>
+              item.sheet_item == shItem.id && item.employee_kind == emplKind.id,
+          )
+          this.updatedOutGo[
+            "item_" + shItem.id + "_kind_" + emplKind.id + "_count"
+          ] = item.count
+
+          this.updatedOutGo[
+            "item_" + shItem.id + "_kind_" + emplKind.id + "_description"
+          ] = item.description
+        })
+      })
+    } catch (e) {
+      this.isError = true
+    } finally {
+    }
   },
   methods: {
     async loadData() {
@@ -181,15 +208,15 @@ export default {
       const outgoKindResponse = await outgoKindAPI.getItemsList(this.userToken)
       this.outgoKindList = await outgoKindResponse.data
     },
-    async submitForm(e) {
+    async submitUpdateForm(e) {
       this.isLoading = true
       e.preventDefault()
       try {
-        await outgoDataAPI.addItemFull(this.userToken, {
-          ...this.newData,
+        await outgoDataAPI.updateItemFull(this.userToken, {
+          ...this.updatedOutGo,
           owner: this.userData.id,
         })
-        await this.$router.replace({ name: "client-main" })
+        // await this.$router.replace({ name: "client-main" })
       } catch (e) {
         this.isError = true
       } finally {
@@ -214,18 +241,21 @@ export default {
     orderedOutgoKinds() {
       return this.outgoKindList.results
     },
-    getFullOutgo() {
-      let outgoCount = 0
-      this.orderedSheetItems.map((shItem) => {
-        this.orderedEmployeeKinds.map((emplKind) => {
-          let key = "item_" + shItem.id + "_kind_" + emplKind.id + "_count"
-          if (this.newData.hasOwnProperty(key)) {
-            outgoCount = outgoCount + parseInt(this.newData[key]) * shItem.sign
-          }
-        })
-      })
-      return outgoCount
+    orderedOutgo() {
+      return this.outgoList.results
     },
+    // getFullOutgo() {
+    //   let outgoCount = 0
+    //   this.orderedSheetItems.map((shItem) => {
+    //     this.orderedEmployeeKinds.map((emplKind) => {
+    //       let key = "item_" + shItem.id + "_kind_" + emplKind.id + "_count"
+    //       if (this.newData.hasOwnProperty(key)) {
+    //         outgoCount = outgoCount + parseInt(this.newData[key]) * shItem.sign
+    //       }
+    //     })
+    //   })
+    //   return outgoCount
+    // },
   },
 }
 </script>

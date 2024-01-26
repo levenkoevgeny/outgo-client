@@ -5,7 +5,11 @@ import {
   NetworkErrorView,
   ServerErrorView,
 } from "@/components/errors"
-import { ClientMainView, NewOutgoView } from "@/components/client"
+import {
+  ClientMainView,
+  NewOutgoView,
+  OutgoUpdateView,
+} from "@/components/client"
 import { AdminMainView } from "@/components/admin"
 import { LoginView } from "@/components/auth"
 import store from "@/store"
@@ -32,9 +36,15 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/client-add",
+    path: "/client/add",
     name: "client-add",
     component: NewOutgoView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/client/:id/update",
+    name: "update",
+    component: OutgoUpdateView,
     meta: { requiresAuth: true },
   },
   {

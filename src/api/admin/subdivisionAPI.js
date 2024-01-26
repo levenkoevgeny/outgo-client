@@ -1,13 +1,12 @@
 import axios from "axios"
 import { authHeaders } from "@/api/auth/authAPI"
 
-let base_url = "outgo"
+let base_url = "subdivisions"
 
-export const outgoAPI = {
-  async getItemsList(token, searchForm = { outgo: "" }) {
-    let { outgo } = { ...searchForm }
+export const subdivisionAPI = {
+  async getItemsList(token, searchForm = {}) {
     return axios.get(
-      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?outgo=${outgo}`,
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}`,
       authHeaders(token),
     )
   },
