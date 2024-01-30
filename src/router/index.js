@@ -35,18 +35,18 @@ const routes = [
     component: ClientMainView,
     meta: { requiresAuth: true },
   },
-  {
-    path: "/client/add",
-    name: "client-add",
-    component: NewOutgoView,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/client/:id/update",
-    name: "update",
-    component: OutgoUpdateView,
-    meta: { requiresAuth: true },
-  },
+  // {
+  //   path: "/client/add",
+  //   name: "client-add",
+  //   component: NewOutgoView,
+  //   meta: { requiresAuth: true },
+  // },
+  // {
+  //   path: "/client/:id/update",
+  //   name: "update",
+  //   component: OutgoUpdateView,
+  //   meta: { requiresAuth: true },
+  // },
   {
     path: "/network-error",
     name: "network-error",

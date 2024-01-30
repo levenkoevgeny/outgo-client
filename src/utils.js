@@ -65,6 +65,8 @@ export const getFormattedTime = (dateTime) => {
 }
 
 export const getCurrentFormatDate = (date = new Date()) => {
+  // console.log("date", date)
+  // console.log("date2", new Date())
   const year = date.toLocaleString("default", { year: "numeric" })
   const month = date.toLocaleString("default", {
     month: "2-digit",

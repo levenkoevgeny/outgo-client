@@ -41,4 +41,10 @@ export const outgoDataAPI = {
       authHeaders(token),
     )
   },
+  async deleteItem(token, itemId) {
+    return axios.delete(
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/${itemId}/`,
+      authHeaders(token),
+    )
+  },
 }

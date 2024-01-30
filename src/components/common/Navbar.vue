@@ -20,10 +20,10 @@
               >На главную</a
             >
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/client/add/">Новый расход</a>
-          </li>
-          <li class="nav-item">
+          <!--          <li class="nav-item">-->
+          <!--            <a class="nav-link" href="/client/add/">Новый расход</a>-->
+          <!--          </li>-->
+          <li class="nav-item" v-if="is_staff">
             <a class="nav-link" href="/admin">Сводный расход</a>
           </li>
         </ul>
@@ -35,6 +35,7 @@
 <script>
 export default {
   name: "Navbar",
+  props: { is_staff: { type: Boolean, required: true } },
 }
 </script>
 
