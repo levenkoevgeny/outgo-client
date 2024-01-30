@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">Navbar</a>
+      <a class="navbar-brand" href="/"
+        ><img src="" alt="" width="30" height="24"
+      /></a>
       <button
         class="navbar-toggler"
         type="button"
@@ -20,13 +22,19 @@
               >На главную</a
             >
           </li>
-          <!--          <li class="nav-item">-->
-          <!--            <a class="nav-link" href="/client/add/">Новый расход</a>-->
-          <!--          </li>-->
-          <li class="nav-item" v-if="is_staff">
+          <li class="nav-item" v-if="userData.is_staff">
             <a class="nav-link" href="/admin">Сводный расход</a>
           </li>
         </ul>
+        <div>
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" @click="logOut" style="cursor: pointer">
+                Выход из системы
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </nav>
@@ -35,7 +43,13 @@
 <script>
 export default {
   name: "Navbar",
-  props: { is_staff: { type: Boolean, required: true } },
+  props: { userData: { type: Object, required: true } },
+  methods: {
+    logOut() {
+      this.$store.dispatch("auth/actionRemoveLogIn")
+      this.$router.push({ name: "login", replace: true })
+    },
+  },
 }
 </script>
 

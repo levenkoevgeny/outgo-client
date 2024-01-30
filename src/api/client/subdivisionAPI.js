@@ -4,10 +4,9 @@ import { authHeaders } from "@/api/auth/authAPI"
 let base_url = "subdivisions"
 
 export const subdivisionAPI = {
-  async getItemsList(token, searchForm = { user: "" }) {
-    let { user } = searchForm
+  async getItemsList(token) {
     return axios.get(
-      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?user=${user}`,
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/`,
       authHeaders(token),
     )
   },

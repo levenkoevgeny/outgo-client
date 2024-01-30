@@ -6,11 +6,18 @@ let base_url = "outgo-data"
 export const outgoDataAPI = {
   async getItemsList(
     token,
-    searchForm = { owner: "", outgo_date__lte: "", outgo_date__gte: "" },
+    searchForm = {
+      outgo_date__lte: "",
+      outgo_date__gte: "",
+      kind: "",
+      subdivision: "",
+    },
   ) {
-    let { owner, outgo_date__lte, outgo_date__gte } = { ...searchForm }
+    let { outgo_date__lte, outgo_date__gte, kind, subdivision } = {
+      ...searchForm,
+    }
     return axios.get(
-      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?owner=${owner}&outgo_date__lte=${outgo_date__lte}&outgo_date__gte=${outgo_date__gte}`,
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?outgo_date__lte=${outgo_date__lte}&outgo_date__gte=${outgo_date__gte}&kind=${kind}&subdivision=${subdivision}`,
       authHeaders(token),
     )
   },

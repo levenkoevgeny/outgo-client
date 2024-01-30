@@ -1,4 +1,5 @@
 <template>
+  <!--  add modal-->
   <div
     class="modal fade"
     id="addOutgoDataModal"
@@ -152,9 +153,8 @@
       </div>
     </div>
   </div>
-
+  <!--  add modal-->
   <!--  update modal-->
-
   <div
     class="modal fade"
     id="updateOutgoDataModal"
@@ -355,6 +355,33 @@
             </div>
           </div>
         </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Подразделение</label>
+              <select v-model="outgoSearchForm.subdivision" class="form-select">
+                <option value="">-----</option>
+                <option
+                  v-for="subdivision in orderedSubdivisions"
+                  :value="subdivision.id"
+                >
+                  {{ subdivision.subdivision_name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Вид расхода</label>
+              <select v-model="outgoSearchForm.kind" class="form-select">
+                <option value="">-----</option>
+                <option v-for="kind in orderedOutgoKinds" :value="kind.id">
+                  {{ kind.kind }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="mt-4"></div>
@@ -380,7 +407,7 @@
             >
               <td>{{ outgoData.subdivision_data.subdivision_name }}</td>
               <td>{{ outgoData.kind_data.kind }}</td>
-              <td>{{ outgoData.outgo_date }}</td>
+              <td class="fw-bold">{{ outgoData.outgo_date }}</td>
               <td>
                 {{ getFormattedDateComponent(outgoData.date_time_created) }}
                 {{ getFormattedTimeComponent(outgoData.date_time_created) }}
@@ -397,8 +424,17 @@
       </div>
       <div v-else>
         <h5>
-          Не найдено расходов. Измените параметры поиска либо
-          <span><a href="">создайте новый расход</a></span>
+          Ничего не найдено. Измените параметры поиска либо
+          <span
+            ><button
+              type="button"
+              class="btn btn-link m-0 px-0 pb-3 fs-5"
+              data-bs-toggle="modal"
+              data-bs-target="#addOutgoDataModal"
+            >
+              создайте новый расход
+            </button></span
+          >
         </h5>
       </div>
     </div>
@@ -450,6 +486,8 @@ export default {
             new Date().getDate() - 10,
           ),
         ),
+        kind: "",
+        subdivision: "",
       },
       newData: {
         kind: "",
@@ -484,7 +522,6 @@ export default {
     async loadData() {
       const subdivisionResponse = await subdivisionAPI.getItemsList(
         this.userToken,
-        { user: this.userData.id },
       )
       this.subdivisionsList = await subdivisionResponse.data
 
@@ -503,7 +540,7 @@ export default {
 
       const outgoDataResponse = await outgoDataAPI.getItemsList(
         this.userToken,
-        { ...this.outgoSearchForm, owner: this.userData.id },
+        { ...this.outgoSearchForm, subdivision__user: this.userData.id },
       )
       this.outgoDataList = await outgoDataResponse.data
 

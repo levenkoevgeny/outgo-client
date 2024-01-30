@@ -1,5 +1,5 @@
 <template>
-  <Navbar :is_staff="this.userData.is_staff" />
+  <Navbar :userData="this.userData" />
   <div>
     <router-view />
   </div>
@@ -9,9 +9,6 @@ import { mapGetters } from "vuex"
 import { Navbar } from "@/components/common"
 export default {
   components: { Navbar },
-  data() {
-    return { is_staff: false }
-  },
   computed: {
     ...mapGetters({
       userData: "auth/getUser",
