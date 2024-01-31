@@ -1,4 +1,5 @@
 <template>
+  <Navbar :userData="this.userData" />
   <!--  add modal-->
   <div
     class="modal fade"
@@ -314,15 +315,6 @@
 
   <!--  update modal-->
   <div class="container">
-    <button
-      style="height: 40px; width: 200px"
-      type="button"
-      class="btn btn-primary ms-2"
-      data-bs-toggle="modal"
-      data-bs-target="#addOutgoDataModal"
-    >
-      Добавить
-    </button>
     <div
       v-if="isLoading"
       class="d-flex justify-content-center align-items-center"
@@ -385,6 +377,17 @@
       </div>
 
       <div class="mt-4"></div>
+      <div class="d-flex justify-content-end">
+        <button
+          type="button"
+          class="btn btn-light"
+          data-bs-toggle="modal"
+          data-bs-target="#addOutgoDataModal"
+        >
+          <font-awesome-icon :icon="['far', 'square-plus']" class="me-2" />
+          Добавить
+        </button>
+      </div>
 
       <div v-if="orderedOutgoData.length">
         <table class="table table-hover">
@@ -407,15 +410,23 @@
             >
               <td>{{ outgoData.subdivision_data.subdivision_name }}</td>
               <td>{{ outgoData.kind_data.kind }}</td>
-              <td class="fw-bold">{{ outgoData.outgo_date }}</td>
+              <td class="fw-bold">
+                {{
+                  new Date(outgoData.outgo_date).toLocaleDateString("default", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
+                }}
+              </td>
               <td>
                 {{ getFormattedDateComponent(outgoData.date_time_created) }}
                 {{ getFormattedTimeComponent(outgoData.date_time_created) }}
               </td>
-              <td @click.stop="makeClone(outgoData.id)">
+              <td @click.stop="makeClone(outgoData.id)" title="Сделать копию">
                 <font-awesome-icon :icon="['far', 'copy']" />
               </td>
-              <td @click.stop="deleteOutgoData(outgoData.id)">
+              <td @click.stop="deleteOutgoData(outgoData.id)" title="Удалить">
                 <font-awesome-icon :icon="['far', 'trash-can']" />
               </td>
             </tr>
@@ -451,7 +462,7 @@ import { outgoDataAPI } from "@/api/client/outgoDataAPI"
 import { outgoKindAPI } from "@/api/client/outgoKindAPI"
 
 import Spinner from "@/components/common/Spinner"
-
+import { Navbar } from "@/components/common"
 import debounce from "lodash.debounce"
 
 import {
@@ -462,7 +473,7 @@ import {
 
 export default {
   name: "ClientMainView",
-  components: { Spinner },
+  components: { Spinner, Navbar },
   data() {
     return {
       subdivisionsList: { results: [] },

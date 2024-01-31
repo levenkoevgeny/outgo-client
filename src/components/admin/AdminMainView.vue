@@ -1,4 +1,5 @@
 <template>
+  <Navbar :userData="this.userData" />
   <!--  add modal-->
   <div
     class="modal fade"
@@ -335,7 +336,7 @@
         <div class="row">
           <div class="col-md-6">
             <div class="mb-3">
-              <label class="form-label">Дата расхода</label>
+              <label class="form-label">Дата строевой записки</label>
               <input
                 type="date"
                 class="form-control"
@@ -345,7 +346,7 @@
           </div>
           <div class="col-md-6">
             <div class="mb-3">
-              <label class="form-label">Вид расхода</label>
+              <label class="form-label">Вид сроевой записки</label>
               <select v-model="outgoSearchForm.kind" class="form-select">
                 <option value="">-----</option>
                 <option v-for="kind in orderedOutgoKinds" :value="kind.id">
@@ -427,31 +428,6 @@
                   </template>
                 </template>
               </tr>
-
-              <!--              <tr-->
-              <!--                v-else-->
-              <!--                @click="selectOutgoForUpdate(item.id)"-->
-              <!--                style="cursor: pointer"-->
-              <!--              >-->
-              <!--                <td>-->
-              <!--                  {{ subdivision.subdivision_name }}-->
-              <!--                </td>-->
-              <!--                <template v-for="shItem in orderedSheetItems" :key="shItem.id">-->
-              <!--                  <template v-for="emplKind in orderedEmployeeKinds">-->
-              <!--                    <td>-->
-              <!--                      {{-->
-              <!--                        item["results"][-->
-              <!--                          "item_" +-->
-              <!--                            shItem.id +-->
-              <!--                            "_kind_" +-->
-              <!--                            emplKind.id +-->
-              <!--                            "_count"-->
-              <!--                        ]-->
-              <!--                      }}-->
-              <!--                    </td>-->
-              <!--                  </template>-->
-              <!--                </template>-->
-              <!--              </tr>-->
             </template>
             <template v-else>
               <tr class="table-warning">
@@ -507,6 +483,7 @@ import { outgoAPI } from "@/api/admin/outgoAPI"
 import { outgoAPI as clientOutgoAPI } from "@/api/client/outgoAPI"
 import { outgoDataAPI } from "@/api/admin/outgoDataAPI"
 import { outgoDataAPI as clientOutgoDataAPI } from "@/api/client/outgoDataAPI"
+import { Navbar, Spinner } from "@/components/common"
 
 import debounce from "lodash.debounce"
 
@@ -516,10 +493,9 @@ import {
   getFormattedTime,
 } from "@/utils"
 
-import Spinner from "@/components/common/Spinner"
 export default {
   name: "AdminMainView",
-  components: { Spinner },
+  components: { Spinner, Navbar },
   data() {
     return {
       subdivisionsList: { results: [] },

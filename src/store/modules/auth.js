@@ -95,6 +95,18 @@ const actions = {
     commit("setToken", "")
     commit("setLoggedIn", false)
   },
+  async updateUserData({ state }) {
+    try {
+      const response = await authApi.updateUserData(state.token, {
+        ...state.user,
+      })
+      if (response.status !== 200) {
+        throw new Error("User update error")
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+  },
 }
 
 // mutations

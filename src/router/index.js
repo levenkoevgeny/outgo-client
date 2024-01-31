@@ -10,7 +10,7 @@ import {
   NewOutgoView,
   OutgoUpdateView,
 } from "@/components/client"
-import { AdminMainView } from "@/components/admin"
+import { AdminMainView, UsersView, SubdivisionsView } from "@/components/admin"
 import { LoginView } from "@/components/auth"
 import store from "@/store"
 
@@ -30,23 +30,23 @@ const routes = [
     meta: { requiresAuth: true, requiresStaff: true },
   },
   {
+    path: "/admin/users",
+    name: "admin-users",
+    component: UsersView,
+    meta: { requiresAuth: true, requiresStaff: true },
+  },
+  {
+    path: "/admin/subdivisions",
+    name: "admin-subdivisions",
+    component: SubdivisionsView,
+    meta: { requiresAuth: true, requiresStaff: true },
+  },
+  {
     path: "/client",
     name: "client-main",
     component: ClientMainView,
     meta: { requiresAuth: true },
   },
-  // {
-  //   path: "/client/add",
-  //   name: "client-add",
-  //   component: NewOutgoView,
-  //   meta: { requiresAuth: true },
-  // },
-  // {
-  //   path: "/client/:id/update",
-  //   name: "update",
-  //   component: OutgoUpdateView,
-  //   meta: { requiresAuth: true },
-  // },
   {
     path: "/network-error",
     name: "network-error",

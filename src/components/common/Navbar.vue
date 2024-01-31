@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="/"
-        ><img src="" alt="" width="30" height="24"
+        ><img :src="iconUrl" alt="" width="40" height="40"
       /></a>
       <button
         class="navbar-toggler"
@@ -23,7 +23,33 @@
             >
           </li>
           <li class="nav-item" v-if="userData.is_staff">
-            <a class="nav-link" href="/admin">Сводный расход</a>
+            <a class="nav-link" href="/admin">Сводная строевая записка</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Администрирование
+            </a>
+            <ul
+              class="dropdown-menu"
+              aria-labelledby="navbarDropdown"
+              v-if="userData.is_staff"
+            >
+              <li>
+                <a class="dropdown-item" href="/admin/users">Пользователи</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/admin/subdivisions"
+                  >Подразделения</a
+                >
+              </li>
+            </ul>
           </li>
         </ul>
         <div>
@@ -48,6 +74,11 @@ export default {
     logOut() {
       this.$store.dispatch("auth/actionRemoveLogIn")
       this.$router.push({ name: "login", replace: true })
+    },
+  },
+  computed: {
+    iconUrl() {
+      return require("@/assets/favicon.png")
     },
   },
 }
