@@ -5,11 +5,7 @@ import {
   NetworkErrorView,
   ServerErrorView,
 } from "@/components/errors"
-import {
-  ClientMainView,
-  NewOutgoView,
-  OutgoUpdateView,
-} from "@/components/client"
+import { ClientMainView } from "@/components/client"
 import { AdminMainView, UsersView, SubdivisionsView } from "@/components/admin"
 import { LoginView } from "@/components/auth"
 import store from "@/store"

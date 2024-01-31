@@ -288,17 +288,13 @@
   </div>
   <!--update user password-->
 
-  <div class="container-fluid">
+  <div class="container">
     <!--    <div class="alert alert-danger" role="alert" v-if="isError">-->
     <!--      Ошибка приложения-->
     <!--    </div>-->
-    <div class="d-flex align-items-center mb-3">
-      <h3 class="m-4">Пользователи</h3>
-    </div>
-
-    <div class="container">
+    <div class="mt-4">
+      <h3 class="my-3">Форма поиска</h3>
       <div class="shadow p-3 mb-5 bg-body rounded">
-        <h5 class="my-2 fs-4">Фильтр</h5>
         <div class="row">
           <div class="col-6">
             <div class="mb-3">
@@ -347,21 +343,21 @@
     </div>
     <div class="d-flex align-items-center justify-content-end">
       <button
-        style="height: 40px; width: 200px"
         type="button"
         class="btn btn-danger ms-2"
         :class="{ 'd-none': !selectedUsersCount }"
         @click="deleteCheckedUsersHandler"
       >
-        Удалить - {{ selectedUsersCount }}
+        <font-awesome-icon :icon="['far', 'trash-can']" /> Удалить -
+        {{ selectedUsersCount }}
       </button>
       <button
-        style="height: 40px; width: 200px"
         type="button"
-        class="btn btn-primary ms-2"
+        class="btn btn-light ms-2"
         data-bs-toggle="modal"
         data-bs-target="#newUserModal"
       >
+        <font-awesome-icon :icon="['fas', 'plus']" />
         Добавить
       </button>
     </div>
@@ -402,37 +398,41 @@
             @click="showModalForUserUpdate(user.id)"
             class="cursor-pointer"
           >
-            <td class="text-center" @click.stop>
+            <td class="text-center align-middle" @click.stop>
               <input
                 type="checkbox"
                 class="form-check-input"
                 v-model="user.checked_val"
               />
             </td>
-            <td class="text-center">
+            <td class="text-center align-middle">
               {{ index + 1 }}
             </td>
-            <td class="text-center">{{ user.username }}</td>
-            <td class="text-center">{{ user.last_name }}</td>
-            <td class="text-center">{{ user.first_name }}</td>
-            <td class="text-center" v-if="user.is_active">
+            <td class="text-center align-middle">{{ user.username }}</td>
+            <td class="text-center align-middle">{{ user.last_name }}</td>
+            <td class="text-center align-middle">{{ user.first_name }}</td>
+            <td class="text-center align-middle" v-if="user.is_active">
               <font-awesome-icon icon="fa-solid fa-check" />
             </td>
-            <td class="text-center" v-else></td>
-            <td class="text-center" v-if="user.is_staff">
+            <td class="text-center align-middle" v-else></td>
+            <td class="text-center align-middle" v-if="user.is_staff">
               <font-awesome-icon icon="fa-solid fa-check" />
             </td>
-            <td class="text-center" v-else></td>
-            <td class="text-center">
-              {{ getFormattedDateComponent(user.date_joined) }} <br />
+            <td class="text-center align-middle" v-else></td>
+            <td class="text-center align-middle">
+              {{ getFormattedDateComponent(user.date_joined) }}
               {{ getFormattedTimeComponent(user.date_joined) }}
             </td>
             <td
-              class="text-center"
+              class="text-center align-middle"
               @click.stop="showModalForPasswordUpdate(user.id)"
             >
-              <button type="button" class="btn btn-secondary">
-                Сменить пароль
+              <button
+                type="button"
+                class="btn btn-secondary"
+                title="Сменить пароль"
+              >
+                <font-awesome-icon :icon="['fas', 'key']" />
               </button>
             </td>
           </tr>
@@ -575,7 +575,6 @@ export default {
         if (user.checked_val) {
           requestIds.push(user.id)
         }
-        return
       })
       let requests = requestIds.map((id) =>
         usersAPI.deleteItem(this.userToken, id),

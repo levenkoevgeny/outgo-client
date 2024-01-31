@@ -94,13 +94,108 @@
   </div>
   <!--  add modal-->
 
-  <Navbar :userData="this.userData" />
-  <div class="container-fluid">
-    <div class="d-flex align-items-center mb-3">
-      <h3 class="m-4">Подразделения</h3>
+  <!--  update modal-->
+  <div
+    class="modal fade"
+    id="updateSubdivisionModal"
+    tabindex="-1"
+    aria-labelledby="updateSubdivisionModal"
+    aria-hidden="true"
+    ref="subdivisionUpdate"
+  >
+    <div
+      class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl"
+    >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">
+            Редактирование подразделения
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <form @submit="updateSubdivision" method="POST">
+              <div class="mb-3">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="mb-3">
+                      <label class="form-label">Название подразделения</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="outgo_date"
+                        required
+                        v-model="currentSubdivisionForUpdate.subdivision_name"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="mb-3">
+                      <label class="form-label"
+                        >Название подразделения (короткое)</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="outgo_date"
+                        required
+                        v-model="
+                          currentSubdivisionForUpdate.subdivision_short_name
+                        "
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="mb-3">
+                      <label class="form-label"
+                        >Закрепленный пользователь</label
+                      >
+                      <select
+                        v-model="currentSubdivisionForUpdate.user"
+                        class="form-select"
+                      >
+                        <option value="">-----</option>
+                        <option v-for="user in orderedUsers" :value="user.id">
+                          {{ user.username }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  ref="updateSubdivisionModalCloseButton"
+                >
+                  Закрыть
+                </button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="container border p-4 mb-4">
-      Фильтр
+  </div>
+  <!--  update modal-->
+
+  <Navbar :userData="this.userData" />
+  <div class="container">
+    <h3 class="my-3">Форма поиска</h3>
+    <div class="shadow-lg p-3 mb-5 bg-body rounded">
       <div class="row">
         <div class="col-md-6">
           <div class="mb-3">
@@ -130,7 +225,7 @@
     <div class="d-flex justify-content-end">
       <button
         type="button"
-        class="btn btn-outline-danger me-3"
+        class="btn btn-danger me-3"
         :class="{ 'd-none': !selectedUsersCount }"
         @click="deleteCheckedUsersHandler"
       >
@@ -140,7 +235,7 @@
       </button>
       <button
         type="button"
-        class="btn btn-outline-dark"
+        class="btn btn-light"
         data-bs-toggle="modal"
         data-bs-target="#addSubdivisionDataModal"
       >
@@ -157,7 +252,7 @@
     </div>
     <div v-else>
       <table class="table table-hover bg-body table-sm mt-4">
-        <thead>
+        <thead class="table-primary">
           <tr>
             <th>
               <input
@@ -172,7 +267,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="subdivision in orderedSubdivisions" :key="subdivision.id">
+          <tr
+            v-for="subdivision in orderedSubdivisions"
+            :key="subdivision.id"
+            @click="selectSubdivisionForUpdate(subdivision.id)"
+            style="cursor: pointer"
+          >
             <td @click.stop>
               <input
                 type="checkbox"
@@ -261,6 +361,22 @@ export default {
         this.isLoading = false
       }
     },
+    async updateSubdivision(e) {
+      try {
+        this.isLoading = true
+        e.preventDefault()
+        await subdivisionAPI.updateItem(
+          this.userToken,
+          this.currentSubdivisionForUpdate,
+        )
+      } catch (e) {
+        this.isError = true
+      } finally {
+        this.$refs.updateSubdivisionModalCloseButton.click()
+        await this.loadData()
+        this.isLoading = false
+      }
+    },
     checkAllHandler(e) {
       if (e.target.checked) {
         this.subdivisionsList.results = this.subdivisionsList.results.map(
@@ -286,7 +402,6 @@ export default {
         if (subdivision.checked_val) {
           requestIds.push(subdivision.id)
         }
-        return
       })
       let requests = requestIds.map((id) =>
         subdivisionAPI.deleteItem(this.userToken, id),
@@ -299,6 +414,19 @@ export default {
         .finally(() => {
           this.isLoading = false
         })
+    },
+    async selectSubdivisionForUpdate(idSubdivision) {
+      const updateResponse = await subdivisionAPI.getItemData(
+        this.userToken,
+        idSubdivision,
+      )
+      this.currentSubdivisionForUpdate = await updateResponse.data
+
+      let updateModal = this.$refs.subdivisionUpdate
+      let myModal = new bootstrap.Modal(updateModal, {
+        keyboard: false,
+      })
+      myModal.show()
     },
     debouncedSearch: debounce(async function () {
       await this.loadData()

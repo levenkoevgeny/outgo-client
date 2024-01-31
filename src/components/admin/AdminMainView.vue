@@ -24,7 +24,7 @@
         <div class="modal-body">
           <div>
             <form @submit="addNewOutgoData" method="POST">
-              <div class="border border-2 mb-3 px-4 py-2">
+              <div class="border border-2 rounded rounded-1 mb-3 px-4 py-2">
                 <div class="row">
                   <div class="col-md-4">
                     <div class="mb-3">
@@ -83,7 +83,7 @@
               <div>
                 <div
                   v-for="sheetItem in orderedSheetItems"
-                  class="border border-2 mb-3 px-4 py-2"
+                  class="border border-2 rounded rounded-1 mb-3 px-4 py-2"
                 >
                   <div>
                     <h5>{{ sheetItem.item_name }}</h5>
@@ -92,7 +92,7 @@
                     >
                       <div
                         v-for="employeeKind in orderedEmployeeKinds"
-                        class="me-3 border-start ps-3"
+                        class="me-3"
                         style="width: 45%"
                       >
                         <div class="mb-3">
@@ -183,7 +183,7 @@
         <div class="modal-body">
           <div>
             <form @submit="updateOutgoData" method="PUT">
-              <div class="border border-2 mb-3 px-4 py-2">
+              <div class="border border-2 rounded rounded-1 mb-3 px-4 py-2">
                 <div class="row">
                   <div class="col-md-4">
                     <div class="mb-3">
@@ -242,7 +242,7 @@
               <div>
                 <div
                   v-for="sheetItem in orderedSheetItems"
-                  class="border border-2 mb-3 px-4 py-2"
+                  class="border border-2 rounded rounded-1 mb-3 px-4 py-2"
                 >
                   <div>
                     <h5>{{ sheetItem.item_name }}</h5>
@@ -251,7 +251,7 @@
                     >
                       <div
                         v-for="employeeKind in orderedEmployeeKinds"
-                        class="me-3 border-start ps-3"
+                        class="me-3"
                         style="width: 45%"
                       >
                         <div class="mb-3">
@@ -323,36 +323,46 @@
   </div>
   <div v-else>
     <div class="container-fluid">
-      <button
-        style="height: 40px; width: 200px"
-        type="button"
-        class="btn btn-primary ms-2"
-        data-bs-toggle="modal"
-        data-bs-target="#addOutgoDataModal"
-      >
-        Добавить
-      </button>
+      <!--      <button-->
+      <!--        style="height: 40px; width: 200px"-->
+      <!--        type="button"-->
+      <!--        class="btn btn-primary ms-2"-->
+      <!--        data-bs-toggle="modal"-->
+      <!--        data-bs-target="#addOutgoDataModal"-->
+      <!--      >-->
+      <!--        Добавить-->
+      <!--      </button>-->
       <div class="container my-3">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="mb-3">
-              <label class="form-label">Дата строевой записки</label>
-              <input
-                type="date"
-                class="form-control"
-                v-model="outgoSearchForm.outgo_date"
-              />
+        <h3 class="my-3">Форма поиска</h3>
+
+        <div class="shadow-lg p-3 mb-5 bg-body rounded">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label"
+                  ><font-awesome-icon :icon="['far', 'calendar-days']" /> Дата
+                  строевой записки</label
+                >
+                <input
+                  type="date"
+                  class="form-control"
+                  v-model="outgoSearchForm.outgo_date"
+                />
+              </div>
             </div>
-          </div>
-          <div class="col-md-6">
-            <div class="mb-3">
-              <label class="form-label">Вид сроевой записки</label>
-              <select v-model="outgoSearchForm.kind" class="form-select">
-                <option value="">-----</option>
-                <option v-for="kind in orderedOutgoKinds" :value="kind.id">
-                  {{ kind.kind }}
-                </option>
-              </select>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label"
+                  ><font-awesome-icon :icon="['fas', 'check']" /> Вид сроевой
+                  записки</label
+                >
+                <select v-model="outgoSearchForm.kind" class="form-select">
+                  <option value="">-----</option>
+                  <option v-for="kind in orderedOutgoKinds" :value="kind.id">
+                    {{ kind.kind }}
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -487,11 +497,7 @@ import { Navbar, Spinner } from "@/components/common"
 
 import debounce from "lodash.debounce"
 
-import {
-  getCurrentFormatDate,
-  getFormattedDate,
-  getFormattedTime,
-} from "@/utils"
+import { getCurrentFormatDate } from "@/utils"
 
 export default {
   name: "AdminMainView",
@@ -581,8 +587,7 @@ export default {
         this.userToken,
         idOutgo,
       )
-      const outgoFotUpdate = await updateResponse.data
-      this.currenOutGoForUpdate = outgoFotUpdate
+      this.currenOutGoForUpdate = await updateResponse.data
 
       const updatedOutgoResponse = await clientOutgoAPI.getItemsList(
         this.userToken,
@@ -596,7 +601,8 @@ export default {
         this.orderedEmployeeKinds.map((emplKind) => {
           let item = this.orderedOutgo.find(
             (item) =>
-              item.sheet_item == shItem.id && item.employee_kind == emplKind.id,
+              item.sheet_item === shItem.id &&
+              item.employee_kind === emplKind.id,
           )
           this.currenOutGoForUpdate[
             "item_" + shItem.id + "_kind_" + emplKind.id + "_count"
@@ -680,7 +686,7 @@ export default {
       this.orderedSubdivisions.map((subdivision) => {
         this.normalizedData[subdivision.id] = []
         this.normalizedData[subdivision.id] = this.orderedOutgoData.filter(
-          (outgoData) => outgoData.subdivision == subdivision.id,
+          (outgoData) => outgoData.subdivision === subdivision.id,
         )
 
         this.normalizedData[subdivision.id].map((outgoData) => {
@@ -689,9 +695,9 @@ export default {
             this.orderedEmployeeKinds.map((employeeKind) => {
               let outgo = this.orderedOutgo.find(
                 (item) =>
-                  item.sheet_item == sheetItem.id &&
-                  item.employee_kind == employeeKind.id &&
-                  item.outgo == outgoData.id,
+                  item.sheet_item === sheetItem.id &&
+                  item.employee_kind === employeeKind.id &&
+                  item.outgo === outgoData.id,
               )
               if (outgo) {
                 outgoData.results[

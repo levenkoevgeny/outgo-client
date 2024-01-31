@@ -24,7 +24,7 @@
         <div class="modal-body">
           <div>
             <form @submit="addNewOutgoData" method="POST">
-              <div class="border border-2 mb-3 px-4 py-2">
+              <div class="border border-2 rounded rounded-1 mb-3 px-4 py-2">
                 <div class="row">
                   <div class="col-md-4">
                     <div class="mb-3">
@@ -83,7 +83,7 @@
               <div>
                 <div
                   v-for="sheetItem in orderedSheetItems"
-                  class="border border-2 mb-3 px-4 py-2"
+                  class="border border-2 rounded rounded-1 mb-3 px-4 py-2"
                 >
                   <div>
                     <h5>{{ sheetItem.item_name }}</h5>
@@ -92,7 +92,7 @@
                     >
                       <div
                         v-for="employeeKind in orderedEmployeeKinds"
-                        class="me-3 border-start ps-3"
+                        class="me-3"
                         style="width: 45%"
                       >
                         <div class="mb-3">
@@ -182,7 +182,7 @@
         <div class="modal-body">
           <div>
             <form @submit="updateOutgoData" method="PUT">
-              <div class="border border-2 mb-3 px-4 py-2">
+              <div class="border border-2 rounded rounded-1 mb-3 px-4 py-2">
                 <div class="row">
                   <div class="col-md-4">
                     <div class="mb-3">
@@ -241,7 +241,7 @@
               <div>
                 <div
                   v-for="sheetItem in orderedSheetItems"
-                  class="border border-2 mb-3 px-4 py-2"
+                  class="border border-2 rounded rounded-1 mb-3 px-4 py-2"
                 >
                   <div>
                     <h5>{{ sheetItem.item_name }}</h5>
@@ -250,7 +250,7 @@
                     >
                       <div
                         v-for="employeeKind in orderedEmployeeKinds"
-                        class="me-3 border-start ps-3"
+                        class="me-3"
                         style="width: 45%"
                       >
                         <div class="mb-3">
@@ -323,12 +323,15 @@
       <Spinner />
     </div>
     <div v-else>
-      <h3 class="m-3">Форма поиска</h3>
+      <h3 class="my-3">Форма поиска</h3>
       <div class="shadow-lg p-3 mb-5 bg-body rounded">
         <div class="row">
           <div class="col-6">
             <div class="mb-3">
-              <label class="form-label">Дата расхода (с)</label>
+              <label class="form-label"
+                ><font-awesome-icon :icon="['far', 'calendar-days']" /> Дата
+                расхода (с)</label
+              >
               <input
                 type="date"
                 class="form-control"
@@ -338,7 +341,10 @@
           </div>
           <div class="col-6">
             <div class="mb-3">
-              <label class="form-label">Дата расхода (по)</label>
+              <label class="form-label"
+                ><font-awesome-icon :icon="['far', 'calendar-days']" /> Дата
+                расхода (по)</label
+              >
               <input
                 type="date"
                 class="form-control"
@@ -350,7 +356,10 @@
         <div class="row">
           <div class="col-md-6">
             <div class="mb-3">
-              <label class="form-label">Подразделение</label>
+              <label class="form-label"
+                ><font-awesome-icon :icon="['fas', 'user-group']" />
+                Подразделение</label
+              >
               <select v-model="outgoSearchForm.subdivision" class="form-select">
                 <option value="">-----</option>
                 <option
@@ -364,7 +373,10 @@
           </div>
           <div class="col-md-6">
             <div class="mb-3">
-              <label class="form-label">Вид расхода</label>
+              <label class="form-label"
+                ><font-awesome-icon :icon="['fas', 'check']" /> Вид
+                расхода</label
+              >
               <select v-model="outgoSearchForm.kind" class="form-select">
                 <option value="">-----</option>
                 <option v-for="kind in orderedOutgoKinds" :value="kind.id">
@@ -384,14 +396,14 @@
           data-bs-toggle="modal"
           data-bs-target="#addOutgoDataModal"
         >
-          <font-awesome-icon :icon="['far', 'square-plus']" class="me-2" />
+          <font-awesome-icon :icon="['fas', 'plus']" />
           Добавить
         </button>
       </div>
 
       <div v-if="orderedOutgoData.length">
-        <table class="table table-hover">
-          <thead>
+        <table class="table table-hover bg-body table-sm mt-4">
+          <thead class="table-primary">
             <tr>
               <th scope="col">Подразделение</th>
               <th scope="col">Вид расхода</th>
@@ -565,8 +577,7 @@ export default {
         this.userToken,
         idOutgo,
       )
-      const outgoFotUpdate = await updateResponse.data
-      this.currenOutGoForUpdate = outgoFotUpdate
+      this.currenOutGoForUpdate = await updateResponse.data
 
       const updatedOutgoResponse = await outgoAPI.getItemsList(this.userToken, {
         outgo: idOutgo,
@@ -577,7 +588,8 @@ export default {
         this.orderedEmployeeKinds.map((emplKind) => {
           let item = this.orderedOutgo.find(
             (item) =>
-              item.sheet_item == shItem.id && item.employee_kind == emplKind.id,
+              item.sheet_item === shItem.id &&
+              item.employee_kind === emplKind.id,
           )
           this.currenOutGoForUpdate[
             "item_" + shItem.id + "_kind_" + emplKind.id + "_count"
