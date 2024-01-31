@@ -733,7 +733,7 @@ export default {
   },
   watch: {
     outgoSearchForm: {
-      handler(newValue, oldValue) {
+      handler() {
         this.debouncedSearch()
       },
       deep: true,

@@ -458,7 +458,7 @@ export default {
   },
   watch: {
     subdivisionSearchForm: {
-      handler(newValue, oldValue) {
+      handler() {
         this.debouncedSearch()
       },
       deep: true,
