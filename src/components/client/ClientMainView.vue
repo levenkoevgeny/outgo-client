@@ -415,12 +415,22 @@
           </thead>
           <tbody>
             <tr
+              title="Дублирующаяся строевая записка"
               v-for="outgoData in orderedOutgoData"
               :key="outgoData.id"
               @click="selectOutgoForUpdate(outgoData.id)"
               style="cursor: pointer"
+              :class="{
+                'table-danger': outgoDataHasDuplicate(outgoData),
+              }"
             >
-              <td>{{ outgoData.subdivision_data.subdivision_name }}</td>
+              <td v-if="outgoDataHasDuplicate(outgoData)">
+                <b>!!! Дублирующаяся строевая записка </b
+                >{{ outgoData.subdivision_data.subdivision_name }}
+              </td>
+              <td v-else>
+                {{ outgoData.subdivision_data.subdivision_name }}
+              </td>
               <td>{{ outgoData.kind_data.kind }}</td>
               <td class="fw-bold">
                 {{
@@ -705,6 +715,15 @@ export default {
           ] = 0
         })
       })
+    },
+    outgoDataHasDuplicate(outgoData) {
+      const duplicateArray = this.outgoDataList.results.filter(
+        (item) =>
+          item.subdivision === outgoData.subdivision &&
+          item.kind === outgoData.kind &&
+          item.outgo_date === outgoData.outgo_date,
+      )
+      return duplicateArray.length > 1
     },
   },
   computed: {
