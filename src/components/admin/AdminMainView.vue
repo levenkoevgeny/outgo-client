@@ -373,6 +373,7 @@
           <tr>
             <th scope="col" rowspan="2">Подразделение</th>
             <th
+              class="text-center align-middle"
               scope="col"
               v-for="shItem in orderedSheetItems"
               :key="shItem.id"
@@ -380,8 +381,11 @@
             >
               {{ shItem.item_name }}
             </th>
-            <th class="table-success" :colspan="orderedEmployeeKinds.length">
-              На лицо
+            <th
+              class="table-success text-center align-middle"
+              :colspan="orderedEmployeeKinds.length"
+            >
+              В строю
             </th>
           </tr>
           <tr>
@@ -390,7 +394,10 @@
                 {{ emplKind.kind }}
               </th>
             </template>
-            <th v-for="emplKind in orderedEmployeeKinds" class="table-success">
+            <th
+              v-for="emplKind in orderedEmployeeKinds"
+              class="table-success text-center align-middle"
+            >
               {{ emplKind.kind }}
             </th>
           </tr>
@@ -419,12 +426,12 @@
                 @click="selectOutgoForUpdate(item.id)"
                 style="cursor: pointer"
               >
-                <td>
+                <td class="align-middle">
                   {{ subdivision.subdivision_name }}
                 </td>
                 <template v-for="shItem in orderedSheetItems" :key="shItem.id">
                   <template v-for="emplKind in orderedEmployeeKinds">
-                    <td>
+                    <td class="text-center align-middle">
                       {{
                         item["results"][
                           "item_" +
@@ -437,11 +444,17 @@
                     </td>
                   </template>
                 </template>
+
+                <template v-for="emplKind in orderedEmployeeKinds">
+                  <td class="text-center align-middle">
+                    {{ item["results"]["employee_" + emplKind.id + "_total"] }}
+                  </td>
+                </template>
               </tr>
             </template>
             <template v-else>
               <tr class="table-warning">
-                <td>
+                <td class="align-middle">
                   {{ subdivision.subdivision_name }}
                 </td>
                 <template v-for="shItem in orderedSheetItems" :key="shItem.id">
@@ -449,34 +462,47 @@
                     <td></td>
                   </template>
                 </template>
+
+                <template v-for="emplKind in orderedEmployeeKinds">
+                  <td class="table-warning"></td>
+                </template>
               </tr>
             </template>
           </template>
         </tbody>
       </table>
       <h3 class="mt-4">Сводная таблица за Академию</h3>
-      <table class="table table-hover mt-3">
+      <table class="table table-hover table-bordered mt-3">
         <thead>
           <tr>
-            <th
+            <td
               scope="col"
               v-for="shItem in orderedSheetItems"
               :key="shItem.id"
               :colspan="orderedEmployeeKinds.length"
+              class="text-center align-middle"
             >
-              {{ shItem.item_name }}
-            </th>
-            <th></th>
+              {{ shItem.item_name }} <br />
+              <b>{{ normalizedData["total"]["sheetItem_" + shItem.id] }}</b>
+            </td>
           </tr>
           <tr>
             <template v-for="shItem in orderedSheetItems" :key="shItem.id">
-              <th v-for="emplKind in orderedEmployeeKinds">
-                {{ emplKind.kind }}
-              </th>
+              <td
+                v-for="emplKind in orderedEmployeeKinds"
+                class="text-center align-middle"
+              >
+                {{ emplKind.kind }} <br />
+                <b>{{
+                  normalizedData["total"][
+                    "sheetItem_" + shItem.id + "_kind_" + emplKind.id
+                  ]
+                }}</b>
+              </td>
             </template>
           </tr>
         </thead>
-        <tbody></tbody>
+        <!--        <tbody></tbody>-->
       </table>
     </div>
   </div>
@@ -693,6 +719,7 @@ export default {
           outgoData.results = {}
           this.orderedSheetItems.map((sheetItem) => {
             this.orderedEmployeeKinds.map((employeeKind) => {
+              // !!!!! проверить следующий блок (если find вернет более одного элемента)
               let outgo = this.orderedOutgo.find(
                 (item) =>
                   item.sheet_item === sheetItem.id &&
@@ -724,7 +751,60 @@ export default {
               }
             })
           })
+          this.orderedEmployeeKinds.map((employeeKind) => {
+            let counter = 0
+            this.orderedSheetItems.map((sheetItem) => {
+              counter =
+                counter +
+                outgoData["results"][
+                  "item_" + sheetItem.id + "_kind_" + employeeKind.id + "_count"
+                ] *
+                  sheetItem.sign
+            })
+            outgoData["results"]["employee_" + employeeKind.id + "_total"] =
+              counter
+          })
         })
+      })
+      this.normalizedData["total"] = {}
+      this.orderedSheetItems.map((sheetItem) => {
+        let sheet_counter = 0
+        this.orderedEmployeeKinds.map((employeeKind) => {
+          let employee_counter = 0
+          this.orderedSubdivisions.map((subdivision) => {
+            this.normalizedData[subdivision.id].map((outgo) => {
+              sheet_counter =
+                sheet_counter +
+                outgo["results"][
+                  "item_" + sheetItem.id + "_kind_" + employeeKind.id + "_count"
+                ]
+              employee_counter =
+                employee_counter +
+                outgo["results"][
+                  "item_" + sheetItem.id + "_kind_" + employeeKind.id + "_count"
+                ]
+            })
+          })
+          this.normalizedData["total"][
+            "sheetItem_" + sheetItem.id + "_kind_" + employeeKind.id
+          ] = employee_counter
+        })
+        this.normalizedData["total"]["sheetItem_" + sheetItem.id] =
+          sheet_counter
+      })
+
+      this.orderedEmployeeKinds.map((employeeKind) => {
+        let counter = 0
+        this.orderedSheetItems.map((sheetItem) => {
+          counter =
+            counter +
+            this.normalizedData["total"][
+              "sheetItem_" + sheetItem.id + "_kind_" + employeeKind.id
+            ] *
+              sheetItem.sign
+        })
+        this.normalizedData["total"]["full_employee_" + employeeKind.id] =
+          counter
       })
     },
   },
