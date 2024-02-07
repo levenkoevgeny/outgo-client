@@ -117,8 +117,17 @@
                           />
                         </div>
                         <div class="mb-3">
-                          <label class="form-label">По фамильно</label>
+                          <label class="form-label">По фамильно </label>
                           <textarea
+                            :required="
+                              newData[
+                                'item_' +
+                                  sheetItem.id +
+                                  '_kind_' +
+                                  employeeKind.id +
+                                  '_count'
+                              ] > 0
+                            "
                             rows="5"
                             class="form-control"
                             v-model="
@@ -130,7 +139,8 @@
                                   '_description'
                               ]
                             "
-                          ></textarea>
+                          >
+                          </textarea>
                         </div>
                       </div>
                     </div>
@@ -409,13 +419,12 @@
               <th scope="col">Вид расхода</th>
               <th scope="col">На дату</th>
               <th scope="col">Дата и время создания</th>
-              <th scope="col"></th>
+              <th scope="col" v-if="userData.is_staff"></th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             <tr
-              title="Дублирующаяся строевая записка"
               v-for="outgoData in orderedOutgoData"
               :key="outgoData.id"
               @click="selectOutgoForUpdate(outgoData.id)"
@@ -424,7 +433,10 @@
                 'table-danger': outgoDataHasDuplicate(outgoData),
               }"
             >
-              <td v-if="outgoDataHasDuplicate(outgoData)">
+              <td
+                v-if="outgoDataHasDuplicate(outgoData)"
+                title="Дублирующаяся строевая записка"
+              >
                 <b>!!! Дублирующаяся строевая записка </b
                 >{{ outgoData.subdivision_data.subdivision_name }}
               </td>
@@ -445,7 +457,11 @@
                 {{ getFormattedDateComponent(outgoData.date_time_created) }}
                 {{ getFormattedTimeComponent(outgoData.date_time_created) }}
               </td>
-              <td @click.stop="makeClone(outgoData.id)" title="Сделать копию">
+              <td
+                @click.stop="makeClone(outgoData.id)"
+                title="Сделать копию"
+                v-if="userData.is_staff"
+              >
                 <font-awesome-icon :icon="['far', 'copy']" />
               </td>
               <td @click.stop="deleteOutgoData(outgoData.id)" title="Удалить">
@@ -616,8 +632,6 @@ export default {
         keyboard: false,
       })
       myModal.show()
-
-      // await this.$router.push({ name: "update", params: { id: idOutgo } })
     },
     async makeClone(outgoId) {
       this.isLoading = true
@@ -653,27 +667,43 @@ export default {
     async addNewOutgoData(e) {
       this.isLoading = true
       e.preventDefault()
-      try {
-        const newOutGoDataResponse = await outgoDataAPI.addItemFull(
-          this.userToken,
-          {
-            ...this.newData,
-            owner: this.userData.id,
-          },
+      const duplicateResponse = await outgoDataAPI.getItemsList(
+        this.userToken,
+        {
+          outgo_date__lte: this.newData.outgo_date,
+          outgo_date__gte: this.newData.outgo_date,
+          kind: this.newData.kind,
+          subdivision: this.newData.subdivision,
+        },
+      )
+      const duplicateData = duplicateResponse.data
+      if (duplicateData.results.length) {
+        alert(
+          "Строевая записка с такой датой и видом уже существует! Измените данные!",
         )
-        const newOutgoDate = await newOutGoDataResponse.data
-        this.outgoDataList.results.push(newOutgoDate)
-      } catch (e) {
-        this.isError = true
-      } finally {
-        this.$refs.addNewOutgoDataModalCloseButton.click()
-        this.newData = {
-          kind: "",
-          subdivision: "",
-          outgo_date: "",
+      } else {
+        try {
+          const newOutGoDataResponse = await outgoDataAPI.addItemFull(
+            this.userToken,
+            {
+              ...this.newData,
+              owner: this.userData.id,
+            },
+          )
+          const newOutgoDate = await newOutGoDataResponse.data
+          this.outgoDataList.results.push(newOutgoDate)
+        } catch (e) {
+          this.isError = true
+        } finally {
+          this.$refs.addNewOutgoDataModalCloseButton.click()
+          this.newData = {
+            kind: "",
+            subdivision: "",
+            outgo_date: "",
+          }
+          await this.loadData()
+          this.isLoading = false
         }
-        await this.loadData()
-        this.isLoading = false
       }
     },
     async updateOutgoData(e) {

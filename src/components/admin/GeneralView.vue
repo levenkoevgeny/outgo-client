@@ -170,9 +170,7 @@
     >
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">
-            Редактирование расхода
-          </h5>
+          <h5 class="modal-title" id="exampleModalLabel">Просмотр расхода</h5>
           <button
             type="button"
             class="btn-close"
@@ -182,132 +180,127 @@
         </div>
         <div class="modal-body">
           <div>
-            <form @submit="updateOutgoData" method="PUT">
-              <div class="border border-2 rounded rounded-1 mb-3 px-4 py-2">
-                <div class="row">
-                  <div class="col-md-4">
-                    <div class="mb-3">
-                      <label class="form-label">Подразделение</label>
-                      <select
-                        class="form-select"
-                        required
-                        name="subdivision"
-                        v-model="currenOutGoForUpdate.subdivision"
+            <div class="border border-2 rounded rounded-1 mb-3 px-4 py-2">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Подразделение</label>
+                    <select
+                      class="form-select"
+                      disabled
+                      name="subdivision"
+                      v-model="currenOutGoForUpdate.subdivision"
+                    >
+                      <option value="">----</option>
+                      <option
+                        v-for="subdivision in orderedSubdivisions"
+                        :key="subdivision.id"
+                        :value="subdivision.id"
                       >
-                        <option value="">----</option>
-                        <option
-                          v-for="subdivision in orderedSubdivisions"
-                          :key="subdivision.id"
-                          :value="subdivision.id"
-                        >
-                          {{ subdivision.subdivision_name }}
-                        </option>
-                      </select>
-                    </div>
+                        {{ subdivision.subdivision_name }}
+                      </option>
+                    </select>
                   </div>
-                  <div class="col-md-4">
-                    <div class="mb-3">
-                      <label class="form-label">На дату</label>
-                      <input
-                        type="date"
-                        class="form-control"
-                        name="outgo_date"
-                        required
-                        v-model="currenOutGoForUpdate.outgo_date"
-                      />
-                    </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">На дату</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      name="outgo_date"
+                      disabled
+                      v-model="currenOutGoForUpdate.outgo_date"
+                    />
                   </div>
-                  <div class="col-md-4">
-                    <div class="mb-3">
-                      <label class="form-label">Вид расхода</label>
-                      <select
-                        class="form-select"
-                        name="kind"
-                        required
-                        v-model="currenOutGoForUpdate.kind"
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Вид расхода</label>
+                    <select
+                      class="form-select"
+                      name="kind"
+                      disabled
+                      v-model="currenOutGoForUpdate.kind"
+                    >
+                      <option value="">----</option>
+                      <option
+                        v-for="outgoKind in orderedOutgoKinds"
+                        :key="outgoKind.id"
+                        :value="outgoKind.id"
                       >
-                        <option value="">----</option>
-                        <option
-                          v-for="outgoKind in orderedOutgoKinds"
-                          :key="outgoKind.id"
-                          :value="outgoKind.id"
-                        >
-                          {{ outgoKind.kind }}
-                        </option>
-                      </select>
-                    </div>
+                        {{ outgoKind.kind }}
+                      </option>
+                    </select>
                   </div>
                 </div>
               </div>
-              <div>
-                <div
-                  v-for="sheetItem in orderedSheetItems"
-                  class="border border-2 rounded rounded-1 mb-3 px-4 py-2"
-                >
-                  <div>
-                    <h5>{{ sheetItem.item_name }}</h5>
+            </div>
+            <div>
+              <div
+                v-for="sheetItem in orderedSheetItems"
+                class="border border-2 rounded rounded-1 mb-3 px-4 py-2"
+              >
+                <div>
+                  <h5>{{ sheetItem.item_name }}</h5>
+                  <div class="d-flex flex-row flex-wrap justify-content-start">
                     <div
-                      class="d-flex flex-row flex-wrap justify-content-start"
+                      v-for="employeeKind in orderedEmployeeKinds"
+                      class="me-3"
+                      style="width: 45%"
                     >
-                      <div
-                        v-for="employeeKind in orderedEmployeeKinds"
-                        class="me-3"
-                        style="width: 45%"
-                      >
-                        <div class="mb-3">
-                          <label class="form-label">{{
-                            employeeKind.kind
-                          }}</label>
-                          <input
-                            type="number"
-                            required
-                            class="form-control"
-                            min="0"
-                            v-model="
+                      <div class="mb-3">
+                        <label class="form-label">{{
+                          employeeKind.kind
+                        }}</label>
+                        <input
+                          type="number"
+                          disabled
+                          class="form-control"
+                          min="0"
+                          v-model="
+                            currenOutGoForUpdate[
+                              'item_' +
+                                sheetItem.id +
+                                '_kind_' +
+                                employeeKind.id +
+                                '_count'
+                            ]
+                          "
+                          :required="sheetItem.is_required"
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">По фамильно</label>
+                        <p>
+                          <b>
+                            {{
                               currenOutGoForUpdate[
-                                'item_' +
+                                "item_" +
                                   sheetItem.id +
-                                  '_kind_' +
+                                  "_kind_" +
                                   employeeKind.id +
-                                  '_count'
+                                  "_description"
                               ]
-                            "
-                            :required="sheetItem.is_required"
-                          />
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label">По фамильно</label>
-                          <textarea
-                            rows="5"
-                            class="form-control"
-                            v-model="
-                              currenOutGoForUpdate[
-                                'item_' +
-                                  sheetItem.id +
-                                  '_kind_' +
-                                  employeeKind.id +
-                                  '_description'
-                              ]
-                            "
-                          ></textarea>
-                        </div>
+                            }}
+                          </b>
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                  ref="updateOutgoDataModalCloseButton"
-                >
-                  Закрыть
-                </button>
-                <button type="submit" class="btn btn-primary">Сохранить</button>
-              </div>
-            </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                ref="updateOutgoDataModalCloseButton"
+              >
+                Закрыть
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -518,7 +511,7 @@ import debounce from "lodash.debounce"
 import { getCurrentFormatDate } from "@/utils"
 
 export default {
-  name: "AdminMainView",
+  name: "GeneralView",
   components: { Spinner, Navbar },
   data() {
     return {
@@ -599,7 +592,6 @@ export default {
     debouncedSearch: debounce(async function () {
       await this.loadData()
     }, 100),
-
     async selectOutgoForUpdate(idOutgo) {
       const updateResponse = await outgoDataAPI.getItemData(
         this.userToken,

@@ -7,7 +7,7 @@ export const outgoAPI = {
   async getItemsList(token, searchForm = { outgo: "" }) {
     let { outgo } = { ...searchForm }
     return axios.get(
-      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?outgo=${outgo}`,
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?outgo=${outgo}&limit=10000`,
       authHeaders(token),
     )
   },

@@ -25,7 +25,12 @@
           <li class="nav-item" v-if="userData.is_staff">
             <a class="nav-link" href="/admin">Сводная строевая записка</a>
           </li>
-          <li class="nav-item dropdown">
+          <li class="nav-item" v-if="userData.is_staff">
+            <a class="nav-link" href="/admin/general"
+              >Сводная строевая записка (без редактирования)</a
+            >
+          </li>
+          <li class="nav-item dropdown" v-if="userData.is_staff">
             <a
               class="nav-link dropdown-toggle"
               href="#"
@@ -36,11 +41,7 @@
             >
               Администрирование
             </a>
-            <ul
-              class="dropdown-menu"
-              aria-labelledby="navbarDropdown"
-              v-if="userData.is_staff"
-            >
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li>
                 <a class="dropdown-item" href="/admin/users">Пользователи</a>
               </li>

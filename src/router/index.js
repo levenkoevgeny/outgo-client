@@ -6,7 +6,12 @@ import {
   ServerErrorView,
 } from "@/components/errors"
 import { ClientMainView } from "@/components/client"
-import { AdminMainView, UsersView, SubdivisionsView } from "@/components/admin"
+import {
+  AdminMainView,
+  UsersView,
+  SubdivisionsView,
+  GeneralView,
+} from "@/components/admin"
 import { LoginView } from "@/components/auth"
 import store from "@/store"
 
@@ -35,6 +40,12 @@ const routes = [
     path: "/admin/subdivisions",
     name: "admin-subdivisions",
     component: SubdivisionsView,
+    meta: { requiresAuth: true, requiresStaff: true },
+  },
+  {
+    path: "/admin/general",
+    name: "admin-general",
+    component: GeneralView,
     meta: { requiresAuth: true, requiresStaff: true },
   },
   {
